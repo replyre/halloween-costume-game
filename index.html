@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="character">
+      <div id="dropzone" class="hat"></div>
+      <div id="dropzone2" class="face"></div>
+      <div id="dropzone3" class="neck"></div>
+    </div>
+    <div id="space" class="elements">
+      <div id="draggable1" draggable="true" class="fk-hat"></div>
+      <div id="draggable2" draggable="true" class="fk-face"></div>
+      <div id="draggable3" draggable="true" class="fk-neck"></div>
+      <div id="draggable4" draggable="true" class="fk-hat-new"></div>
+      <div id="draggable5" draggable="true" class="fk-face-new"></div>
+      <div id="draggable6" draggable="true" class="fk-neck-new"></div>
+    </div>
+    <div class="text">
+      Halloween Costume Game
+      <p>* drap and drop to dress the character for halloween</p>
+    </div>
+    <script>
+      const draggable1 = document.getElementById("draggable1");
+      const draggable2 = document.getElementById("draggable2");
+      const draggable3 = document.getElementById("draggable3");
+      const draggable4 = document.getElementById("draggable4");
+      const draggable5 = document.getElementById("draggable5");
+      const draggable6 = document.getElementById("draggable6");
+
+      const dropzone = document.getElementById("dropzone");
+      const dropzone2 = document.getElementById("dropzone2");
+      const dropzone3 = document.getElementById("dropzone3");
+      const space = document.getElementById("space");
+
+      // Add dragstart listeners to all draggable items
+      const draggableItems = [
+        { element: draggable1, data: "draggable1" },
+        { element: draggable2, data: "draggable2" },
+        { element: draggable3, data: "draggable3" },
+        { element: draggable4, data: "draggable4" },
+        { element: draggable5, data: "draggable5" },
+        { element: draggable6, data: "draggable6" },
+      ];
+
+      draggableItems.forEach((item) => {
+        item.element.addEventListener("dragstart", (event) => {
+          event.dataTransfer.setData("text", item.data);
+        });
+      });
+
+      // Generic drop event handler for dropzones
+      function handleDropzoneDrop(
+        event,
+        targetDropzone,
+        originalItem,
+        replacementItems
+      ) {
+        event.preventDefault();
+        const data = event.dataTransfer.getData("text");
+        const droppedElement = document.getElementById(data);
+
+        // Allow only the intended replacements
+        if (replacementItems.includes(data)) {
+          // Check if an item is already in the dropzone
+          const currentChild = targetDropzone.firstChild;
+
+          // If the current child is there and it's different from the dropped item, move it back to space
+          if (currentChild && currentChild !== droppedElement) {
+            space.appendChild(currentChild);
+            checkEmptyDropzone(targetDropzone);
+          }
+
+          // Move the dropped element to the target dropzone
+          targetDropzone.appendChild(droppedElement);
+          targetDropzone.style.backgroundColor = "#252525"; // Set background color when element is added
+        }
+      }
+
+      // Handle dragging over for dropzones
+      dropzone.addEventListener("dragover", (event) => {
+        event.preventDefault();
+      });
+
+      dropzone2.addEventListener("dragover", (event) => {
+        event.preventDefault();
+      });
+
+      dropzone3.addEventListener("dragover", (event) => {
+        event.preventDefault();
+      });
+
+      // Handle drop events for the three dropzones
+      dropzone.addEventListener("drop", (event) => {
+        handleDropzoneDrop(event, dropzone, draggable1, [
+          "draggable1",
+          "draggable4",
+        ]);
+      });
+
+      dropzone2.addEventListener("drop", (event) => {
+        handleDropzoneDrop(event, dropzone2, draggable2, [
+          "draggable2",
+          "draggable5",
+        ]);
+      });
+
+      dropzone3.addEventListener("drop", (event) => {
+        handleDropzoneDrop(event, dropzone3, draggable3, [
+          "draggable3",
+          "draggable6",
+        ]);
+      });
+
+      // Allow the space div to accept any draggable and move it back to space
+      space.addEventListener("dragover", (event) => {
+        event.preventDefault();
+      });
+
+      space.addEventListener("drop", (event) => {
+        event.preventDefault();
+        const data = event.dataTransfer.getData("text");
+        const droppedElement = document.getElementById(data);
+
+        // Move the element back to space
+        space.appendChild(droppedElement);
+
+        // Check if any dropzones are empty and set their background to transparent
+        [dropzone, dropzone2, dropzone3].forEach(checkEmptyDropzone);
+      });
+
+      // Function to check if the dropzone is empty and make its background transparent
+      function checkEmptyDropzone(dropzone) {
+        if (!dropzone.hasChildNodes()) {
+          dropzone.style.backgroundColor = "transparent";
+        }
+      }
+
+      // Initial background check on page load (in case no elements are present)
+      [dropzone, dropzone2, dropzone3].forEach(checkEmptyDropzone);
+    </script>
+  </body>
+</html>
